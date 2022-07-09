@@ -1,0 +1,29 @@
+{% extends 'shop/basic.html' %}
+
+{%block title%} Title of About {% endblock %}
+{%block body%} 
+<section class="py-5 container">
+    <div class="row py-lg-5">
+      <div class="col-lg-8 col-md-8 mx-2 ">
+        <h1 class="fw-light">MY SHOP</h1>
+        <p class="lead text-muted">Amazon was founded by Jeff Bezos in Bellevue, Washington, on July 5, 1994. The company started as an online marketplace for books but expanded to sell electronics, software, video games, apparel, furniture, food, toys, and jewelry. In 2015, Amazon surpassed Walmart as the most valuable retailer in the United States by market capitalization. In 2017, Amazon acquired Whole Foods Market for US$13.4 billion, which substantially increased its footprint as a physical retailer. In 2018, Bezos announced that its two-day delivery service, Amazon Prime, had surpassed 100 million subscribers worldwide.</p>
+        <p>
+          <a href="#" class="btn btn-primary my-2">Learn More</a>
+          
+        </p>
+      </div>
+    </div>
+  </section>
+
+{%endblock%}
+{%block script%}
+<script>
+  var sum =0
+  cart = JSON.parse(localStorage.getItem('cart'));
+  for(item in cart){
+    let qty = cart[item][0]
+    sum =sum+qty
+  }
+  document.getElementById('cart').innerHTML = sum;
+</script>
+{%endblock%}

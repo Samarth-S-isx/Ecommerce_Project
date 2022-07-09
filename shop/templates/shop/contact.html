@@ -1,0 +1,42 @@
+{% extends 'shop/basic.html' %}
+
+{%block title%} Title of contact {% endblock %}
+{%block css%}
+<style>
+    
+</style>
+{%endblock%}
+{%block body%} 
+<div class="container-fluid">
+    <div class="row mx-auto ">
+        <div class="col-lg-6 mx-auto">
+            <h1>Contact Me!</h1>
+            <form action="/contact" method="POST"> 
+                {%csrf_token%}
+                <div class="mb-3">
+                    <label for="Name" class="form-label">Your Name</label>
+                    <input type="text" class="form-control" id="Name" name="name" >
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" >
+                </div>
+                <div class="mb-3">
+                    <label for="Number" class="form-label">Phone Number</label>
+                    <input type="number" class="form-control" id="Number" name="number">
+                </div>
+                <div class="mb-3">
+                    <label for="query" class="form-label">Tell Us About Your Problem</label>
+                    <textarea type="text" class="form-control" id="query" name="query"></textarea>
+                </div>
+                <button type="button submit" class="btn btn-danger">Sumbit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+{%endblock%}

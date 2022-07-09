@@ -1,0 +1,134 @@
+{% extends 'shop/basic.html' %}
+
+{%block title%} {{product.product_name}}{% endblock %}
+{%block css%}
+<style>
+    .container{
+        padding-top: 2em;
+    }
+    img{
+        width: 100%;
+        height: 400px;
+    }
+</style>
+{% endblock %}
+{%block body%}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4">
+          <img src="/media/{{product.img}}" alt="">
+        </div>
+        <div class="col-lg-8">
+           <h1 id="namepr{{product.id}}"> {{product.product_name}} </h1>
+           <h4>  <b id="pricepr{{product.id}}">{{product.price}} Rs</b></h4>
+           <p>{{product.desc}}</p>
+        </div>
+    </div>
+        <div class="col my-4">
+            <a class="btn btn-primary mx-2" href="/checkout">Buy Now</a >
+            <span id="divpr{{product.id}}" class="divpr">
+              <button href="#" id="pr{{product.id}}" class="btn btn-primary cart">Add To Cart</button>
+            </span>
+        </div>
+
+    
+</div>
+
+{%endblock%}
+{%block script%}
+<script>
+  //Find OUT the cart items from local storage
+  
+  if(localStorage.getItem('cart') == null){
+    var cart = {};
+    }
+    else
+    {
+    cart = JSON.parse(localStorage.getItem('cart'));
+    //document.getElementById('cart').innerHTML = Object.keys(cart).length;
+    updateCart(cart)
+    updatepop(cart)
+  }
+    
+//if add to cart button is clicked ,add/increment item    
+    $('.cart').click(function(){
+    console.log('clicked');
+    var idstr = this.id.toString();
+    console.log(idstr);
+    //console.log(document.getElementById(`name${[idstr]}`).innerHTML)
+    if (cart[idstr] !=undefined){
+    qty = cart[idstr][0] + 1
+    cart[idstr][0] = cart[idstr][0] + 1;
+    }
+    else
+    {
+    qty=1
+    pdt=document.getElementById(`name${[idstr]}`).innerHTML
+    price=document.getElementById(`price${[idstr]}`).innerHTML
+    cart[idstr] = [qty,pdt,price];
+    }
+    console.log(cart)
+    updateCart(cart)
+    localStorage.setItem('cart', JSON.stringify(cart));
+    document.getElementById('cart').innerHTML = Object.keys(cart).length;
+    updatepop(cart)
+    
+    });
+
+//fuctions updatepop,updatecart,clearcart
+   function updatepop(cart){
+     var product = ""
+    for (var i in cart ){
+      namepr =document.getElementById(`name${i}`).innerHTML
+      product=product+`<p><b>Name</b>-${namepr}, <b>Qty</b>-${cart[i][0]}</p><br>`
+    }
+    product = product+`<a href="/checkout" class="btn btn-outline-success">CheckOut</a>`
+    document.getElementById("pop").setAttribute("data-bs-content",product )
+  } 
+  function updateCart(cart) { 
+       var sum=0
+      for (var item in cart) {
+          sum = sum+cart[item][0];
+          document.getElementById('div' + item).innerHTML = `<button id="minus${item}" class="btn btn-primary minus">-</button> <span id = "val${item}"> ${cart[item][0]}</span><button id ="plus${item}" class="btn btn-danger plus">+</button>`;
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      document.getElementById('cart').innerHTML = sum;
+      console.log(sum)
+      updatepop(cart)
+    }
+
+ //working of  minus and plus button
+  $('.divpr').on('click','button.minus',function(){
+  //console.log("minus clicked")
+  a = this.id.slice(5)
+  cart[a][0]=cart[a][0]-1
+  document.getElementById('val'+a).innerHTML=`${cart[a][0]}`
+  localStorage.setItem('cart', JSON.stringify(cart));
+  //console.log(cart)
+  updatepop(cart);
+  updateCart(cart)
+ 
+})
+  $('.divpr').on('click','button.plus',function(){
+  a = this.id.slice(4)
+  cart[a][0]=cart[a][0]+1
+  document.getElementById('val'+a).innerHTML=`${cart[a][0]}`
+  localStorage.setItem('cart', JSON.stringify(cart));
+  //console.log(cart)
+  updatepop(cart);
+  updateCart(cart)
+  })
+ $('.clearcart').on('click',function(){
+   localStorage.clear()
+   location.reload()
+ })
+ 
+
+
+
+
+//add popover to cart
+var popover = new bootstrap.Popover(document.querySelector('#pop'))
+//document.getElementById("pop").setAttribute("data-bs-content","<h5>hello</h5>")
+</script>
+{%endblock%}

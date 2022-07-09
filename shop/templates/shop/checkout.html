@@ -1,0 +1,133 @@
+{% extends 'shop/basic.html' %}
+{%block css%}
+<style>
+    .row{
+        display: flex;
+    }
+    #nodisplay{
+        display: none;
+    }
+    .badge{
+        font-size: 1.1rem;
+    }
+</style>
+{%endblock%}
+{%block title%} Title of Checkout {% endblock %}
+{%block body%} 
+{%load static%}
+<div class="container ">
+    <section class="my-4">
+        <h2> Step 1 - My Awesome Cart Express Checkout - Review Your Cart items </h2>
+        <ul class="list-group my-4" id="items">
+
+        </ul>
+    </section>
+    <section >
+        <h2> Step 2 - Enter Address & Other Details</h2>
+        
+        <form class="row g-3 mx-auto my-2" action="/checkout/" method="POST">
+            {%csrf_token%}
+            <input type="hidden"  name="items_json" id="items_json" >
+            <div class="col-md-6">
+            <label for="fname" class="form-label">First Name</label>
+            <input type="text" class="form-control" id="fname" name="fname">
+            </div>
+            <div class="col-md-6">
+            <label for="sname" class="form-label">Second Name</label>
+            <input type="text" class="form-control" id="sname" name="sname">
+            </div>
+            <div class="col-md-6">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <div class="col-md-6">
+                <label for="number" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="number" name="number">
+            </div>
+            <div class="col-12">
+            <label for="address1" class="form-label">Address</label>
+            <input type="text" class="form-control" id="Address1" name="address1" placeholder="1234 Main St">
+            </div>
+            <!-- <div class="col-12">
+            <label for="address2" class="form-label">Address 2</label>
+            <input type="text" class="form-control" id="address2" name="address2" placeholder="Apartment, studio, or floor">
+            </div> -->
+            <div class="col-md-6">
+            <label for="city" class="form-label">City</label>
+            <input type="text" class="form-control" id="city" name="city">
+            </div>
+            <div class="col-md-4">
+            <label for="state" class="form-label">State</label>
+            <input type="text" class="form-control" id="state" name="state">
+            </div>
+            <div class="col-md-2">
+            <label for="zipcode" class="form-label">Zip</label>
+            <input type="text" class="form-control" id="zipcode" name="zipcode">
+            </div>
+            <div class="col-12">
+            <button type="submit button" class="btn btn-primary">Checkout</button>
+            </div>
+        </form>
+       <div class="nodisplay">
+         <p id="thank">{{thank}}</p>
+         <p id="orderid">{{id}}</p>
+       </div>
+    </section>    
+
+
+</div>
+{%endblock%}
+
+
+{%block script%}
+<script language = "javascript" type = "text/javascript">
+ var sum =0
+ var billprice=0
+ if(localStorage.getItem('cart') == null){
+    var cart = {};
+  }else{
+       cart = JSON.parse(localStorage.getItem('cart'));
+  }
+if ($.isEmptyObject(cart)) {
+    //if object is empty
+    mystr = `<p>Your cart is empty, please add some items to your cart before checking out!</p>`
+    $('#items').append(mystr);
+  } else{
+    for(item in cart){
+        let name = cart[item][1]
+        let qty = cart[item][0]
+        let price = cart[item][2]
+        billprice=billprice+parseInt(price)*parseInt(qty)
+        sum = sum+qty
+        str =  `<li class="list-group-item d-flex justify-content-between align-items-center">
+            ${name}
+            <span class="badge bg-primary rounded-pill">${qty}</span> 
+            <span class="badge bg-danger rounded-pill">${price}/-</span>
+        </li>`
+        $('#items').append(str)
+        }
+        str = `<li class="list-group-item d-flex justify-content-between align-items-center">
+            Total
+            <span class="badge bg-primary rounded-pill">${billprice}/-</span>`
+        $('#items').append(str)
+        document.getElementById('cart').innerHTML = sum;
+        $('#items_json').val(JSON.stringify(cart));
+        
+    }
+thank = document.getElementById('thank').innerHTML
+orderid = document.getElementById('orderid').innerHTML
+if(thank){
+    alert(`Thank you to order...Your order id is ${orderid}`)
+    localStorage.clear()
+    document.location='/'
+}
+//clearcart
+$('.clearcart').on('click',function(){
+    localStorage.clear()
+    location.reload()
+  })
+  
+console.log(billprice)
+ 
+</script>
+{%endblock%}

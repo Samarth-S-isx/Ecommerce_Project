@@ -1,0 +1,114 @@
+{% extends 'shop/basic.html' %}
+{%block css%}
+<style>
+    .row{
+        display: flex;
+    }
+    #nodisplay{
+        display: none;
+    }
+</style>
+{%endblock%}
+{%block title%} Title of Checkout {% endblock %}
+{%block body%} 
+{%load static%}
+<div class="container ">
+    <section class="my-4" >
+        <h3>Step 1 - Enter your OrderId and Email Id to track your order</h3>
+        
+        <form class="row g-3 mx-auto my-2"  method="POST" id="trackerform">
+            {%csrf_token%}
+            <div class="col-md-6">
+            <label for="orderid" class="form-label">Order Id</label>
+            <input type="text" class="form-control" id="orderid" name="order_id">
+            </div>
+            <div class="col-md-6">
+            <label for="email" class="form-label">Email</label> 
+            <input type="email" class="form-control" id="email" name="email">
+            </div>
+            <button type="submit" class="btn btn-primary">Track Order</button>
+        </form>
+    </section>    
+    <section class="my-4">
+        <h3> Step 2 - Track Order </h3>
+        <ul class="list-group" id="items">
+            Enter your order Id and Email and click Track Order to find details about your order!
+        </ul>
+
+    </section>
+    <section class="my-4">
+        <h3> Order</h3>
+        <ul class="list-group" id="citems">
+           
+        </ul>
+
+    </section>
+
+
+</div>
+{%endblock%}
+{%block script%}
+<script>
+    $('#trackerform').submit(function(event) {
+        $('#items').empty();
+        var formData = {
+            'order_id': $('input[name=order_id]').val(),
+            'email': $('input[name=email]').val(),
+            // important to verify wether we are the only on sending form   
+            'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+        };
+        $.ajax({
+                type: 'POST',
+                url: '/tracker/',
+                data: formData,
+                encode: true
+            })
+            .done(function(data) {
+                $('#citems').empty()
+                data = JSON.parse(data);
+                if ( data['status']=="success") {
+                    updates = data['updates']
+                    for (i = 0; i < updates.length; i++) {
+                        let text = updates[i]['text'];
+                        let time = updates[i]['time'];
+                        mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        ${text}
+                        <span class="badge bg-primary rounded-pill">${time}</span>
+                    </li>`
+                        $('#items').append(mystr);
+                    }
+                    cart=JSON.parse(data['itemjson'])
+                    console.log(cart)
+                    for (item in cart){
+                        let name = cart[item][i];
+                        let qty =cart[item][0]
+                        str =  `<li class="list-group-item d-flex justify-content-between align-items-center">
+                            ${name}
+                            <span class="badge bg-primary rounded-pill">${qty}</span> 
+                            
+                        </li>`
+                        $('#citems').append(str)
+                        
+                    }
+                } else {
+                    mystr = `<li class="list-group-item d-flex justify-content-between align-items-center">
+                        Sorry, We are not able to fetch this order id and email. Make sure to type correct order Id and email</li>`
+                    $('#items').append(mystr);
+                }
+                
+            });
+    //fill in the oreder details
+    
+        event.preventDefault();
+    });
+var sum =0
+cart = JSON.parse(localStorage.getItem('cart'));
+for(item in cart){
+    let qty = cart[item][0]
+      sum =sum+qty
+}
+document.getElementById('cart').innerHTML = sum;
+var popover = new bootstrap.Popover(document.querySelector('#pop'))
+
+</script>
+{%endblock%}
